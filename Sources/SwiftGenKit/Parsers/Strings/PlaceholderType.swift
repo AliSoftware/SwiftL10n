@@ -14,6 +14,7 @@ extension Strings {
     case char = "CChar"
     case cString = "UnsafePointer<CChar>"
     case pointer = "UnsafeRawPointer"
+    case uint = "UInt"
 
     init?(formatChar char: Character) {
       guard let lcChar = String(char).lowercased().first else {
@@ -24,8 +25,10 @@ extension Strings {
         self = .object
       case "a", "e", "f", "g":
         self = .float
-      case "d", "i", "o", "u", "x":
+      case "d", "i", "o", "x":
         self = .int
+      case "u":
+        self = .uint
       case "c":
         self = .char
       case "s":
@@ -42,7 +45,9 @@ extension Strings {
 extension Strings.PlaceholderType {
   private static let formatTypesRegEx: NSRegularExpression = {
     // %d/%i/%o/%u/%x with their optional length modifiers like in "%lld"
-    let patternInt = "(?:h|hh|l|ll|q|z|t|j)?([dioux])"
+    let patternInt = "(?:h|hh|l|ll|q|z|t|j)?([diox])"
+    // valid flag for Unsigned int
+    let patternUnsignedInt = "(?:h|hh|l|ll|q|z|t|j)?([u])"
     // valid flags for float
     let patternFloat = "[aefg]"
     // like in "%3$" to make positional specifiers
@@ -52,7 +57,7 @@ extension Strings.PlaceholderType {
 
     do {
       return try NSRegularExpression(
-        pattern: "(?:^|(?<!%)(?:%%)*)%\(position)\(precision)(@|\(patternInt)|\(patternFloat)|[csp])",
+        pattern: "(?:^|(?<!%)(?:%%)*)%\(position)\(precision)(@|\(patternInt)|\(patternFloat)|\(patternUnsignedInt)|[csp])",
         options: [.caseInsensitive]
       )
     } catch {
