@@ -78,7 +78,7 @@ extension {{enumName}} {
     let format = {{param.bundle|default:"BundleToken.bundle"}}.localizedString(forKey: key, value: value, table: table)
     {% endif %}
     // Workaround for https://github.com/SwiftGen/SwiftGen/issues/859
-    let regex = try! NSRegularExpression(pattern: "(?<!%)%( |\.|$)")
+    let regex = try! NSRegularExpression(pattern: "(?<!%)%( |\\.|$)")
     let range = NSRange(location: 0, length: format.utf16.count)
     let result = regex.stringByReplacingMatches(in: format, options: [], range: range, withTemplate: "%%$1")
     return String(format: result, locale: Locale.current, arguments: args)
